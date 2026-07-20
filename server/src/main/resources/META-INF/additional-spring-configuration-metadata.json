@@ -1,0 +1,32 @@
+{"properties": [
+  {
+    "name": "file.upload-dir",
+    "type": "java.lang.String",
+    "description": "A description for 'file.upload-dir'"
+  },
+  {
+    "name": "gemini.project-id",
+    "type": "java.lang.String",
+    "description": "A description for 'gemini.project-id'"
+  },
+  {
+    "name": "gemini.location",
+    "type": "java.lang.String",
+    "description": "A description for 'gemini.location'"
+  },
+  {
+    "name": "gemini.model-name",
+    "type": "java.lang.String",
+    "description": "A description for 'gemini.model-name'"
+  },
+  {
+    "name": "gemini.api-key",
+    "type": "java.lang.String",
+    "description": "A description for 'gemini.api-key'"
+  },
+  {
+    "name": "ALLOWED_ORIGINS",
+    "type": "java.lang.String",
+    "description": "A description for 'ALLOWED_ORIGINS'"
+  }
+]}

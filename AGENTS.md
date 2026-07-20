@@ -55,6 +55,20 @@ Override the `.env` path with `-Denv.file=/path/to/.env` if needed.
 
 `application.properties` reads these env vars with no defaults — they MUST exist in `.env` (or the real environment), or Spring receives the literal `${DB_URL}` and fails with `Driver claims to not accept jdbcUrl, ${DB_URL}`.
 
+### Docker (run from repo root)
+
+```
+docker compose up --build          # prod: postgres + server + nginx(client) → http://localhost:80
+docker compose down                # stop prod stack
+docker compose -f docker-compose.dev.yml up   # dev: HMR for both client(:5173) and server(:8080)
+docker compose -f docker-compose.dev.yml down
+```
+
+- **Prod** (`docker-compose.yml`): client is a multi-stage build (node:20 → nginx:alpine). Nginx serves the React dist AND reverse-proxies `/api/*` → `server:8080` (same-origin, no CORS). Client built with `VITE_API_BASE_URL=/api`. Postgres is internal-only (not exposed to host).
+- **Dev** (`docker-compose.dev.yml`): server runs `mvn spring-boot:run` with `src/` mounted (devtools auto-restart on classpath change). Client runs `vite dev --host 0.0.0.0` with `src/` + `node_modules` mounted (HMR). Postgres exposed on `5433` (avoid conflict with local Postgres on 5432). Browser hits `localhost:5173` (client) + `localhost:8080` (server) directly.
+- Both compose files read `server/.env` for AI keys etc., and override `DB_URL`/`DB_USERNAME`/`DB_PASSWORD` to point at the compose postgres service.
+- Requires Docker running locally (Orbstack/Docker Desktop).
+
 ## Verification
 
 No enforced pipeline. Effective checks:
@@ -88,8 +102,8 @@ Question generation is **resume-aware**: `analyzeAndSetCandidateDetails` returns
 
 ## Hardcoded values that affect local dev
 
-- **CORS**: `server/.../config/WebConfig.java` allows only `https://ai-mern-interviewer.web.app`. A local frontend hitting the deployed backend (or any non-allowlisted origin) will be blocked; change the origin in `WebConfig.java`.
-- **API base URL**: `client/src/api/apiService.js` reads `import.meta.env.VITE_API_BASE_URL` (from `client/.env`), falling back to `http://localhost:8080/api`. To point the frontend at another backend, edit `client/.env`.
+- **CORS**: `server/.../config/WebConfig.java` reads `cors.allowed-origins` (comma-separated) via `@Value`, defaulting to `https://ai-mern-interviewer.web.app,http://localhost:5173,http://127.0.0.1:5173`. Override via `CORS_ALLOWED_ORIGINS` env var in `server/.env`.
+- **API base URL**: `client/src/api/apiService.js` reads `import.meta.env.VITE_API_BASE_URL` (from `client/.env`), falling back to `/api` (relative — works with nginx same-origin proxy). To point the frontend at a different backend, edit `client/.env`.
 
 ## Client conventions
 

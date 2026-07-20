@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Repo-specific guidance for OpenCode agents. Verify against the codebase before relying on anything in `README.md` — parts of it are stale.
+Repo-specific guidance for OpenCode agents. `README.md` covers user-facing setup and overview; this file covers the operational gotchas an agent needs to avoid mistakes.
 
 ## Repository shape
 
